@@ -1,11 +1,14 @@
 package com.arthurfaby.fixmecommon.pipeline;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class Pipeline<T> {
     private final List<Handler<T>> handlers;
-    private static final System.Logger LOGGER = System.getLogger(Pipeline.class.getName());
+    private static final Logger logger = LogManager.getLogger(Pipeline.class);
 
     Pipeline(List<Handler<T>> handlers) {
         this.handlers = handlers;
@@ -16,11 +19,12 @@ public class Pipeline<T> {
             try {
                 HandlerResult response = handler.execute(ctx);
                 if (response == HandlerResult.STOP) {
-                    LOGGER.log(System.Logger.Level.INFO, "Handler stopped pipeline");
+                    logger.info("Handler stopped pipeline");
                     break;
                 }
             } catch (Exception e) {
-                LOGGER.log(System.Logger.Level.WARNING, "Handler failed, stopping pipeline", e);
+                logger.warn("Handler failed, stopping pipeline", e);
+                break;
             }
         }
     }

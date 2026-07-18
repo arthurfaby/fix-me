@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" monitorInterval="30">
+
+    <Properties>
+        <Property name="LOG_PATTERN">
+            %style{%d{HH:mm:ss.SSS}}{bright_black} %highlight{%-5level}{FATAL=bright_red bold, ERROR=red bold, WARN=yellow bold, INFO=bright_green, DEBUG=cyan, TRACE=bright_black} %style{[%t]}{bright_magenta} %style{%c{1}}{bright_blue} %style{›}{bright_black} %msg%n%highlight{%throwable{short}}{ERROR=red, WARN=yellow}
+        </Property>
+    </Properties>
+
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${LOG_PATTERN}" disableAnsi="false"/>
+        </Console>
+    </Appenders>
+
+    <Loggers>
+        <Logger name="com.arthurfaby" level="DEBUG" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Root level="INFO">
+            <AppenderRef ref="Console"/>
+        </Root>
+    </Loggers>
+
+</Configuration>
