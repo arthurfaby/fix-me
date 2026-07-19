@@ -6,13 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Decoupe un flux d'octets accumule en frames FIX completes.
- * Une frame se termine toujours par SOH + "10=" + 3 chiffres + SOH ;
- * comme aucune valeur de champ ne peut contenir de SOH, cette sequence
- * ne peut apparaitre qu'au debut du champ checksum, jamais ailleurs.
- * Stateful : garde en interne le reste non decode entre deux appels.
- */
 public final class FixFrameDecoder implements FrameDecoder {
 
     private static final int MAX_FRAME_SIZE = 4096;

@@ -20,13 +20,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
 
-/**
- * Reactor NIO generique : un seul thread possede le Selector et tous les
- * SocketChannel/SelectionKey qu'il enregistre. Les autres threads (executor
- * metier, thread CLI) n'agissent que via {@link Connection#send(byte[])} et
- * {@link Connection#close()}, qui empilent une demande puis appellent
- * {@link Selector#wakeup()} - jamais d'acces direct au reseau hors de ce thread.
- */
 public final class Reactor {
 
     private static final Logger logger = LogManager.getLogger(
@@ -55,12 +48,6 @@ public final class Reactor {
         this.listener = listener;
     }
 
-    /**
-     * Enregistre un port d'ecoute (0 = port ephemere choisi par l'OS, utile en test).
-     * {@code tag} est propage a {@link Connection#serverTag()} pour chaque client accepte sur ce port.
-     *
-     * @return le port effectivement lie
-     */
     public int registerServer(int port, Object tag) throws IOException {
         ServerSocketChannel serverChannel = ServerSocketChannel.open();
         serverChannel.configureBlocking(false);
@@ -69,14 +56,11 @@ public final class Reactor {
         return ((InetSocketAddress) serverChannel.getLocalAddress()).getPort();
     }
 
-    /** Ouvre une connexion sortante non-bloquante ; {@link ConnectionListener#onConnected} sera appele une fois la connexion etablie. */
     public Connection connect(String host, int port) throws IOException {
         SocketChannel channel = SocketChannel.open();
         channel.configureBlocking(false);
         channel.connect(new InetSocketAddress(host, port));
 
-        // Le Selector peut etre bloque dans select() sur le thread du Reactor : wakeup()
-        // avant register() evite que ce register() n'attende la fin du select() en cours.
         selector.wakeup();
         SelectionKey key = channel.register(selector, SelectionKey.OP_CONNECT);
         Connection connection = new Connection(
@@ -228,7 +212,7 @@ public final class Reactor {
             while ((buffer = outbound.peek()) != null) {
                 connection.channel().write(buffer);
                 if (buffer.hasRemaining()) {
-                    return; // noyau plein : OP_WRITE reste arme, on repassera
+                    return;
                 }
                 outbound.poll();
             }

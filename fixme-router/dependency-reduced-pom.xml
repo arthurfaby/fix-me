@@ -20,7 +20,7 @@
             <configuration>
               <transformers>
                 <transformer>
-                  <mainClass>com.arthurfaby.fixmerouter.MainFixmeRouter</mainClass>
+                  <mainClass>com.arthurfaby.fixmerouter.RouterApplication</mainClass>
                 </transformer>
               </transformers>
             </configuration>

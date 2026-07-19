@@ -1,5 +1,9 @@
 package com.arthurfaby.fixmecommon.net;
 
+import com.arthurfaby.fixmecommon.protocol.enums.FixDebug;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.IOException;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
@@ -9,16 +13,9 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executor;
 
-/**
- * Une connexion TCP geree par un {@link Reactor}.
- *
- * Regle d'or : seul le thread Selector touche {@link #channel()} ou sa
- * {@link SelectionKey} (accessibles seulement dans le package, reserve au
- * Reactor). Tout autre thread ne passe que par {@link #send(byte[])} et
- * {@link #close()}, qui ne font qu'empiler une demande et reveiller le
- * Selector - jamais d'ecriture ou de fermeture directe du channel.
- */
 public final class Connection {
+
+    private final static Logger logger = LogManager.getLogger(Connection.class);
 
     private final long id;
     private final SocketChannel channel;
@@ -29,7 +26,7 @@ public final class Connection {
     private final Object serverTag;
     private final Queue<ByteBuffer> outbound = new ConcurrentLinkedQueue<>();
 
-    private volatile Object attachment;
+    private volatile Integer attachment;
 
     Connection(long id, SocketChannel channel, SelectionKey key, Reactor reactor,
                FrameDecoder decoder, Executor sharedExecutor, Object serverTag) {
@@ -46,27 +43,31 @@ public final class Connection {
         return id;
     }
 
-    /** Le tag passe a {@link Reactor#registerServer(int, Object)} pour le port sur lequel cette connexion est arrivee (null si sortante). */
     public Object serverTag() {
         return serverTag;
     }
 
-    /** Attache libre pour le code metier (ex: l'ID FIX assigne apres le Logon). */
-    public Object attachment() {
+    public Integer attachment() {
         return attachment;
     }
 
-    public void attach(Object value) {
+    public void attach(Integer value) {
         this.attachment = value;
     }
 
     public void send(byte[] frame) {
+        logger.debug("[{}] Message sent : {}", attachment, FixDebug.getReadableWire(frame));
         outbound.offer(ByteBuffer.wrap(frame));
         reactor.wakeupFor(this);
     }
 
     public void close() {
+        logger.debug("[{}] Closing connection", attachment);
         reactor.requestClose(this);
+    }
+
+    public boolean isOpen() {
+        return channel.isOpen();
     }
 
     public SocketAddress remoteAddress() throws IOException {

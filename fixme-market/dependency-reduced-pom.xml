@@ -20,7 +20,7 @@
             <configuration>
               <transformers>
                 <transformer>
-                  <mainClass>com.arthurfaby.fixmemarket.MainFixmeMarket</mainClass>
+                  <mainClass>com.arthurfaby.fixmemarket.MarketApplication</mainClass>
                 </transformer>
               </transformers>
             </configuration>
