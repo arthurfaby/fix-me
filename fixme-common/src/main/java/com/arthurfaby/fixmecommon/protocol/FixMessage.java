@@ -25,6 +25,10 @@ public final class FixMessage {
         return v;
     }
 
+    public boolean has(FixTag tag) {
+        return fields.containsKey(tag.getKey());
+    }
+
     public int getInt(FixTag tag) { return Integer.parseInt(getString(tag)); }
     public BigDecimal getPrice(FixTag tag) { return new BigDecimal(getString(tag)); }
 
