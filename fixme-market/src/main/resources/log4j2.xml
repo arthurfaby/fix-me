@@ -8,17 +8,17 @@
     </Properties>
 
     <Appenders>
-        <Console name="Console" target="SYSTEM_OUT">
+        <SplitTerminalAppender name="SplitTerminal">
             <PatternLayout pattern="${LOG_PATTERN}" disableAnsi="false"/>
-        </Console>
+        </SplitTerminalAppender>
     </Appenders>
 
     <Loggers>
         <Logger name="com.arthurfaby" level="DEBUG" additivity="false">
-            <AppenderRef ref="Console"/>
+            <AppenderRef ref="SplitTerminal"/>
         </Logger>
         <Root level="INFO">
-            <AppenderRef ref="Console"/>
+            <AppenderRef ref="SplitTerminal"/>
         </Root>
     </Loggers>
 

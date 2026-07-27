@@ -27,6 +27,8 @@ import org.apache.logging.log4j.Logger;
  */
 public final class MarketConnectionListener implements ConnectionListener {
 
+    private Connection connection;
+
     private static final Logger LOGGER = LogManager.getLogger(MarketConnectionListener.class);
 
     private final Pipeline<MarketCtx> pipeline;
@@ -43,7 +45,7 @@ public final class MarketConnectionListener implements ConnectionListener {
 
     @Override
     public void onConnected(Connection routerConnection) {
-        LOGGER.info("Connected to router");
+        this.connection = routerConnection;
     }
 
     @Override
@@ -74,5 +76,9 @@ public final class MarketConnectionListener implements ConnectionListener {
     @Override
     public void onDisconnected(Connection routerConnection) {
         LOGGER.warn("Disconnected from router");
+    }
+
+    public Connection connection() {
+        return connection;
     }
 }

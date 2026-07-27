@@ -2,6 +2,7 @@ package com.arthurfaby.fixmemarket.book;
 
 import com.arthurfaby.fixmecommon.protocol.enums.Side;
 
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
@@ -51,5 +52,9 @@ public final class InstrumentBook {
             return current - quantity;
         });
         return outcome.get();
+    }
+
+    public ConcurrentHashMap<String, Integer> quantities() {
+        return quantities;
     }
 }

@@ -4,6 +4,11 @@ import com.arthurfaby.fixmemarket.book.InstrumentBook;
 
 import com.arthurfaby.fixmecommon.net.FixFrameDecoder;
 import com.arthurfaby.fixmecommon.net.Reactor;
+import com.arthurfaby.fixmemarket.cli.CLIRouter;
+import com.arthurfaby.fixmemarket.cli.SplitTerminal;
+import com.arthurfaby.fixmemarket.cli.commands.BookCommand;
+import com.arthurfaby.fixmemarket.cli.commands.HelpCommand;
+import com.arthurfaby.fixmemarket.cli.commands.IdCommand;
 import com.arthurfaby.fixmemarket.net.MarketConnectionListener;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,7 +18,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Scanner;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -81,7 +88,19 @@ public class MarketApplication implements Callable<Integer> {
         }
     }
 
-    private static final Logger logger = LogManager.getLogger(MarketApplication.class);
+    /** Les instruments resolus depuis --instruments / --instruments-file (visible pour les tests). */
+    Map<String, Integer> instruments() {
+        return instruments;
+    }
+
+    public static final Logger logger = LogManager.getLogger(MarketApplication.class);
+
+    private final Scanner scanner = new Scanner(System.in);
+
+    private String readInput() {
+        SplitTerminal.prompt("> ");
+        return scanner.nextLine();
+    }
 
     @Override
     public Integer call() {
@@ -89,17 +108,21 @@ public class MarketApplication implements Callable<Integer> {
             logger.fatal("No instruments specified.");
             return 1;
         }
+
+        SplitTerminal.init();
         logger.info("Instruments : {}", this.instruments);
 
         InstrumentBook book = new InstrumentBook(this.instruments);
         ExecutorService workerPool = Executors.newFixedThreadPool(4);
-        Reactor reactor = new Reactor(workerPool, FixFrameDecoder::new, new MarketConnectionListener(book));
+        MarketConnectionListener marketConnectionListener = new MarketConnectionListener(book);
+        Reactor reactor = new Reactor(workerPool, FixFrameDecoder::new, marketConnectionListener);
 
         try {
             reactor.connect(routerHost, routerPort);
         } catch (IOException e) {
             logger.error("Failed to connect to router at {}:{}", routerHost, routerPort, e);
             workerPool.shutdown();
+            SplitTerminal.restore();
             return 1;
         }
 
@@ -113,16 +136,23 @@ public class MarketApplication implements Callable<Integer> {
                 Thread.currentThread().interrupt();
             }
             workerPool.shutdown();
+            SplitTerminal.restore();
         }));
 
-        return 0;
+        var cli = new CLIRouter();
+        cli.register(new HelpCommand(cli));
+        cli.register(new IdCommand(marketConnectionListener.connection()));
+        cli.register(new BookCommand(book));
+
+        while (true) {
+            var input = readInput();
+            cli.handleInput(input.strip());
+        }
     }
 
     static void main(String[] args) {
         logger.debug("MarketApplication starts");
         int exitCode = new CommandLine(new MarketApplication()).execute(args);
-        if (exitCode != 0) {
-            System.exit(exitCode);
-        }
+        System.exit(exitCode);
     }
 }
