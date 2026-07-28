@@ -4,3 +4,6 @@ target/
 *.iml
 .DS_Store
 .vscode/
+
+# Artefact du maven-shade-plugin, regenere a chaque build
+dependency-reduced-pom.xml
