@@ -22,6 +22,21 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
         </dependency>
+        <!-- Test uniquement : le test full-stack (phase 9) cable un vrai Router et
+             un vrai Market en process pour prouver la chaine de bout en bout. Pas
+             de cycle : Router/Market ne dependent pas du Broker. -->
+        <dependency>
+            <groupId>com.arthurfaby</groupId>
+            <artifactId>fixme-router</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.arthurfaby</groupId>
+            <artifactId>fixme-market</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>

@@ -19,4 +19,9 @@ public class RoutingTable {
     public static Optional<Connection> find(Integer fixId) {
         return Optional.ofNullable(table.get(fixId));
     }
+
+    /** Nombre d'entrees vivantes. Sert a verifier l'absence de fuite (entrees mortes). */
+    public static int size() {
+        return table.size();
+    }
 }

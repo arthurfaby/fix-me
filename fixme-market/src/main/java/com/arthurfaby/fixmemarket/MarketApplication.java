@@ -97,8 +97,12 @@ public class MarketApplication implements Callable<Integer> {
 
     private final Scanner scanner = new Scanner(System.in);
 
+    /** Lit une ligne, ou {@code null} si stdin est ferme (EOF : pipe vide, kill, Ctrl-D). */
     private String readInput() {
         SplitTerminal.prompt("> ");
+        if (!scanner.hasNextLine()) {
+            return null;
+        }
         return scanner.nextLine();
     }
 
@@ -146,8 +150,13 @@ public class MarketApplication implements Callable<Integer> {
 
         while (true) {
             var input = readInput();
+            if (input == null) { // EOF : on sort proprement plutot que de crasher sur NoSuchElementException
+                logger.info("End of input, shutting down.");
+                break;
+            }
             cli.handleInput(input.strip());
         }
+        return 0;
     }
 
     static void main(String[] args) {
