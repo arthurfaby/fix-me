@@ -2,7 +2,7 @@ package com.arthurfaby.fixmebroker.cli;
 
 import com.arthurfaby.fixmebroker.cli.commands.IdCommand;
 import com.arthurfaby.fixmebroker.cli.commands.OrderCommand;
-import com.arthurfaby.fixmebroker.cli.commands.QuitCommand;
+import com.arthurfaby.fixmebroker.cli.commands.ExitCommand;
 import com.arthurfaby.fixmebroker.order.OrderSender;
 import com.arthurfaby.fixmebroker.order.PendingOrders;
 import com.arthurfaby.fixmebroker.report.RecordingReporter;
@@ -153,12 +153,12 @@ class CLITest {
     }
 
     @Test
-    void quitTriggersTheShutdownAction() {
+    void exitTriggersTheShutdownAction() {
         AtomicBoolean stopped = new AtomicBoolean(false);
         CLIRouter cli = new CLIRouter();
-        cli.register(new QuitCommand(() -> stopped.set(true)));
+        cli.register(new ExitCommand(() -> stopped.set(true)));
 
-        cli.handleInput("quit");
+        cli.handleInput("exit");
 
         assertThat(stopped).isTrue();
     }

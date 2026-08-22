@@ -32,6 +32,23 @@ EOF
     exit 1
 fi
 
+# Fail fast if a port is already taken, otherwise a client connects to the wrong
+# service (on macOS port 5000 is the AirPlay Receiver) and reads garbage as FIX.
+if command -v lsof >/dev/null 2>&1; then
+    for port in "$BROKER_PORT" "$MARKET_PORT"; do
+        if lsof -nP -iTCP:"$port" -sTCP:LISTEN >/dev/null 2>&1; then
+            holder=$(lsof -nP -iTCP:"$port" -sTCP:LISTEN | awk 'NR==2 {print $1}')
+            cat >&2 <<EOF
+Port $port is already in use (by ${holder:-another process}).
+On macOS port 5000 is the AirPlay Receiver: turn it off in System Settings, or
+pick other ports:
+  BROKER_PORT=6000 MARKET_PORT=6001 ./demo.sh
+EOF
+            exit 1
+        fi
+    done
+fi
+
 if [[ ! -f "$ROUTER_JAR" || ! -f "$MARKET_JAR" || ! -f "$BROKER_JAR" ]]; then
     echo "Jars missing, building (mvn clean package)..."
     (cd "$ROOT" && mvn -q clean package)

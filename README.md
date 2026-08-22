@@ -90,7 +90,7 @@ Un `demo.sh` (voir plus bas) automate ce lancement dans des panes `tmux`.
 ```
 buy  <marketId> <instrument> <qty> <price>
 sell <marketId> <instrument> <qty> <price>
-id | help | quit
+id | help | exit
 ```
 
 Exemple de session Broker :

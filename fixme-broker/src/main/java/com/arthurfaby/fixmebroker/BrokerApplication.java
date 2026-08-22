@@ -5,7 +5,7 @@ import com.arthurfaby.fixmebroker.cli.SplitTerminal;
 import com.arthurfaby.fixmebroker.cli.commands.HelpCommand;
 import com.arthurfaby.fixmebroker.cli.commands.IdCommand;
 import com.arthurfaby.fixmebroker.cli.commands.OrderCommand;
-import com.arthurfaby.fixmebroker.cli.commands.QuitCommand;
+import com.arthurfaby.fixmebroker.cli.commands.ExitCommand;
 import com.arthurfaby.fixmebroker.net.BrokerConnectionListener;
 import com.arthurfaby.fixmebroker.order.OrderSender;
 import com.arthurfaby.fixmebroker.order.PendingOrders;
@@ -100,7 +100,7 @@ public final class BrokerApplication implements Callable<Integer> {
         cli.register(new OrderCommand("sell", Side.SELL, sender));
         cli.register(new IdCommand(connection::attachment));
         cli.register(new HelpCommand(cli));
-        cli.register(new QuitCommand(shutdown));
+        cli.register(new ExitCommand(shutdown));
 
         while (running.get()) {
             String input;

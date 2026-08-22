@@ -1,21 +1,21 @@
 package com.arthurfaby.fixmebroker.cli.commands;
 
-public final class QuitCommand implements Command {
+public final class ExitCommand implements Command {
 
-    private final Runnable onQuit;
+    private final Runnable onExit;
 
-    public QuitCommand(Runnable onQuit) {
-        this.onQuit = onQuit;
+    public ExitCommand(Runnable onExit) {
+        this.onExit = onExit;
     }
 
     @Override
     public String name() {
-        return "quit";
+        return "exit";
     }
 
     @Override
     public String usage() {
-        return "quit";
+        return "exit";
     }
 
     @Override
@@ -25,6 +25,6 @@ public final class QuitCommand implements Command {
 
     @Override
     public void execute(String[] args) {
-        onQuit.run();
+        onExit.run();
     }
 }
