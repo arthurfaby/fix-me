@@ -41,7 +41,7 @@ class FixParserTest {
 
     @Test
     void rejectsAMessageMissingTheChecksumField() {
-        byte[] wire = FixExamples.wire("49=000000", "56=100001", "35=A"); // pas de 10=
+        byte[] wire = FixExamples.wire("49=000000", "56=100001", "35=A");
 
         assertThatThrownBy(() -> FixParser.parse(wire))
                 .isInstanceOf(FixParseException.class);
@@ -49,7 +49,7 @@ class FixParserTest {
 
     @Test
     void rejectsAMessageWhereChecksumIsNotTheLastField() {
-        byte[] wire = FixExamples.wire("49=000000", "10=125", "56=100001"); // 10= au milieu
+        byte[] wire = FixExamples.wire("49=000000", "10=125", "56=100001");
 
         assertThatThrownBy(() -> FixParser.parse(wire))
                 .isInstanceOf(FixParseException.class);

@@ -6,10 +6,6 @@ import com.arthurfaby.fixmecommon.pipeline.HandlerResult;
 import com.arthurfaby.fixmecommon.protocol.enums.FixTag;
 import com.arthurfaby.fixmecommon.protocol.enums.Side;
 
-/**
- * Troisieme maillon : pour un Buy, rejette si le stock est insuffisant.
- * Un Sell est toujours accepte a ce stade (le market rachete).
- */
 public final class QuantityAvailableHandler implements Handler<MarketCtx> {
 
     private final InstrumentBook book;

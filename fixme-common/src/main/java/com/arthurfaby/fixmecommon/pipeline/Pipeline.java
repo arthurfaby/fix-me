@@ -23,6 +23,7 @@ public class Pipeline<T> {
                     break;
                 }
             } catch (Exception e) {
+                // a handler blowing up must not kill the executor thread
                 logger.warn("Handler failed, stopping pipeline", e);
                 break;
             }

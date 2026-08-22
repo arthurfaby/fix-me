@@ -3,16 +3,6 @@ package com.arthurfaby.fixmebroker.report;
 import com.arthurfaby.fixmebroker.cli.SplitTerminal;
 import com.arthurfaby.fixmebroker.order.Order;
 
-/**
- * Reporter de production : ecrit les etapes de vie d'un ordre dans la zone
- * commande du terminal, aligne sur un tag de largeur fixe.
- *
- * <pre>
- * [SENT]     #1 Buy 100 AAPL @ 150.50 -> market 100002
- * [EXECUTED] #1 Buy 100 AAPL @ 150.50
- * [REJECTED] #2 : Not enough quantity
- * </pre>
- */
 public final class SplitTerminalReporter implements OrderReporter {
 
     @Override

@@ -25,12 +25,6 @@ import java.util.concurrent.Executors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * Phase 9 (PLAN.md §4.2) : la chaine complete, tous les composants REELS en
- * process - un vrai Router, un vrai Market (avec sa logique de stock), et la
- * logique d'emission/reception du Broker - relies par de vraies sockets NIO
- * sur des ports ephemeres. C'est le test qui prouve la demo de bout en bout.
- */
 class FullStackIntegrationTest {
 
     private final List<Reactor> reactors = new ArrayList<>();
@@ -78,7 +72,7 @@ class FullStackIntegrationTest {
         assertThat(event.kind()).isEqualTo("EXECUTED");
         assertThat(event.order().instrument()).isEqualTo("AAPL");
         assertThat(event.order().quantity()).isEqualTo(100);
-        // le stock du VRAI market a bien ete decremente
+
         assertThat(market.book.quantityOf("AAPL")).isEqualTo(900);
     }
 
@@ -92,7 +86,7 @@ class FullStackIntegrationTest {
         RecordingReporter.Event event = broker.awaitReport();
         assertThat(event.kind()).isEqualTo("REJECTED");
         assertThat(event.detail()).isEqualTo("Not enough quantity");
-        assertThat(market.book.quantityOf("AAPL")).isEqualTo(100); // stock intact
+        assertThat(market.book.quantityOf("AAPL")).isEqualTo(100);
     }
 
     @Test
@@ -141,7 +135,6 @@ class FullStackIntegrationTest {
         broker1.sender.submit(marketB.id(), "GOOG", Side.BUY, 20, new BigDecimal("99.0"));
         broker2.sender.submit(marketA.id(), "AAPL", Side.BUY, 30, new BigDecimal("150.0"));
 
-        // chaque broker ne voit QUE ses propres rapports
         broker1.awaitReports(2);
         broker2.awaitReports(1);
 
@@ -151,12 +144,9 @@ class FullStackIntegrationTest {
         assertThat(broker2.reports()).singleElement()
                 .satisfies(e -> assertThat(e.order().quantity()).isEqualTo(30));
 
-        // et les stocks reels reflètent exactement les executions
         assertThat(marketA.book.quantityOf("AAPL")).isEqualTo(1000 - 10 - 30);
         assertThat(marketB.book.quantityOf("GOOG")).isEqualTo(1000 - 20);
     }
-
-    // --- montage des composants reels --------------------------------------------
 
     private Reactor newReactor(com.arthurfaby.fixmecommon.net.ConnectionListener listener) {
         ExecutorService pool = Executors.newFixedThreadPool(4);
@@ -218,10 +208,9 @@ class FullStackIntegrationTest {
             return id;
         }
 
-        /** Les rapports recus (executed/rejected), en excluant les echos [SENT]. */
         List<RecordingReporter.Event> reports() {
             return reporter.events.stream()
-                    .filter(e -> !e.kind().equals("SENT"))
+                    .filter(e -> !e.kind().equals("SENT")) // drop the [SENT] echo emitted on send
                     .toList();
         }
 

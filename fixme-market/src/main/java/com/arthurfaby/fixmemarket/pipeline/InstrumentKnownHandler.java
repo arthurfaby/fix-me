@@ -6,7 +6,6 @@ import com.arthurfaby.fixmecommon.pipeline.HandlerResult;
 import com.arthurfaby.fixmecommon.protocol.enums.FixTag;
 import com.arthurfaby.fixmecommon.protocol.enums.RejectReason;
 
-/** Deuxieme maillon : rejette si l'instrument n'est pas tenu par ce Market. */
 public final class InstrumentKnownHandler implements Handler<MarketCtx> {
 
     private final InstrumentBook book;

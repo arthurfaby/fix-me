@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 public final class MessageFactory {
     private MessageFactory() {}
 
-    private static final int ROUTER_ID = 0; // reserved id
+    private static final int ROUTER_ID = 0;
 
     public static FixMessage newOrder(int senderId, int targetId, int clOrdId,
                                       String instrument, Side side, int quantity, BigDecimal price) {
@@ -62,8 +62,6 @@ public final class MessageFactory {
                 .build();
     }
 
-    // Reject transport (Router) — checksum invalide : rien dans le message d'origine
-    // n'est fiable, donc pas de ClOrdID.
     public static FixMessage reject(int senderId, int targetId, RejectReason reason) {
         return FixMessage.builder()
                 .set(FixTag.SENDER_ID, senderId)
@@ -73,8 +71,6 @@ public final class MessageFactory {
                 .build();
     }
 
-    // Reject transport avec corrélation — le checksum était valide, seul le
-    // routage a échoué (UNKNOWN_TARGET / TARGET_UNREACHABLE) : ClOrdID est fiable.
     public static FixMessage reject(int senderId, int targetId, int clOrdId, RejectReason reason) {
         return FixMessage.builder()
                 .set(FixTag.SENDER_ID, senderId)

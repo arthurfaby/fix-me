@@ -33,7 +33,7 @@ class PipelineTest {
         Pipeline<RecordingContext> pipeline = Pipeline.<RecordingContext>builder()
                 .addHandler(recording("A"))
                 .addHandler(stopping("B"))
-                .addHandler(recording("C")) // ne doit jamais s'exécuter
+                .addHandler(recording("C"))
                 .build();
 
         RecordingContext ctx = new RecordingContext();
@@ -55,7 +55,7 @@ class PipelineTest {
         Pipeline<RecordingContext> pipeline = Pipeline.<RecordingContext>builder()
                 .addHandler(recording("A"))
                 .addHandler(ctx -> { throw new RuntimeException("boom"); })
-                .addHandler(recording("C")) // ne doit jamais s'exécuter
+                .addHandler(recording("C"))
                 .build();
 
         RecordingContext ctx = new RecordingContext();

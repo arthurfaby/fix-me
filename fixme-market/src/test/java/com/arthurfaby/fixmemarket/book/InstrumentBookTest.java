@@ -12,11 +12,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * DoD phase 6 (PLAN.md) : le book se teste entierement sans reseau.
- * Le piege vise ici est le check-et-decrement non atomique
- * (if (stock >= qty) stock -= qty) : d'ou le test a 100 threads.
- */
 class InstrumentBookTest {
 
     @Test
@@ -41,7 +36,7 @@ class InstrumentBookTest {
 
         assertThat(book.tryExecute("AAPL", Side.BUY, 101))
                 .isEqualTo(InstrumentBook.Result.INSUFFICIENT_QUANTITY);
-        // le piege : decrementer puis constater le negatif
+
         assertThat(book.quantityOf("AAPL")).isEqualTo(100);
     }
 
@@ -114,7 +109,6 @@ class InstrumentBookTest {
         AtomicInteger executed = new AtomicInteger();
         AtomicInteger refused = new AtomicInteger();
 
-        // deux fois plus d'acheteurs que de stock : exactement 100 doivent passer
         runConcurrently(200, () -> {
             if (book.tryExecute("AAPL", Side.BUY, 1) == InstrumentBook.Result.EXECUTED) {
                 executed.incrementAndGet();
@@ -134,7 +128,6 @@ class InstrumentBookTest {
         AtomicInteger index = new AtomicInteger();
         AtomicInteger executed = new AtomicInteger();
 
-        // 200 taches : les paires achetent 1, les impaires vendent 1 -> stock final inchange
         runConcurrently(200, () -> {
             Side side = index.getAndIncrement() % 2 == 0 ? Side.BUY : Side.SELL;
             if (book.tryExecute("AAPL", side, 1) == InstrumentBook.Result.EXECUTED) {
@@ -146,7 +139,6 @@ class InstrumentBookTest {
         assertThat(book.quantityOf("AAPL")).isEqualTo(500);
     }
 
-    /** Lance {@code count} taches en parallele, toutes relachees au meme instant. */
     private static void runConcurrently(int count, Runnable task) throws InterruptedException {
         ExecutorService pool = Executors.newFixedThreadPool(16);
         CountDownLatch start = new CountDownLatch(1);

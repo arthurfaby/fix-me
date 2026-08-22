@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Config de test : logs en WARN sur stderr, pour garder la sortie surefire
-     lisible malgre les tests de charge (1000 cycles, flood 10 Mo). -->
+<!-- WARN logs to stderr, to keep the surefire output readable under load -->
 <Configuration status="WARN">
 
     <Appenders>

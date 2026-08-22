@@ -6,12 +6,6 @@ import com.arthurfaby.fixmecommon.protocol.enums.Side;
 
 import java.math.BigDecimal;
 
-/**
- * Commande {@code buy}/{@code sell} : {@code <marketId> <instrument> <qty> <price>}.
- * Une seule classe, parametree par le {@link Side} et le nom, car les deux
- * ne different que par ca. Toute entree invalide produit un message d'usage,
- * jamais une stack trace.
- */
 public final class OrderCommand implements Command {
 
     private final String name;

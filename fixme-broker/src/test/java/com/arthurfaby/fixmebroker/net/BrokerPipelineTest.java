@@ -23,11 +23,6 @@ import java.util.concurrent.Executors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * DoD phase 7 (PLAN.md) : la chaine Broker
- * Checksum -> IdAssignment -> ExecutionReport, exercee via un vrai Reactor
- * face a un faux Router en socket bloquante cote test.
- */
 class BrokerPipelineTest {
 
     private static final int BROKER_ID = 100_003;
@@ -104,7 +99,6 @@ class BrokerPipelineTest {
         Order order = new Order(5, 999_999, "AAPL", Side.BUY, 10, new BigDecimal("150.0"));
         pending.remember(order);
 
-        // Reject transport du Router (35=3) avec correlation : cible inconnue
         send(MessageFactory.reject(0, BROKER_ID, 5, RejectReason.UNKNOWN_TARGET));
 
         RecordingReporter.Event event = awaitEvent();
@@ -116,7 +110,7 @@ class BrokerPipelineTest {
 
     @Test
     void aRouterChecksumRejectWithoutClOrdIdIsShownAsATransportReject() throws IOException {
-        // Reject transport sans correlation (35=3, pas de 11=) : checksum invalide
+
         send(MessageFactory.reject(0, BROKER_ID, RejectReason.INVALID_CHECKSUM));
 
         RecordingReporter.Event event = awaitEvent();
@@ -143,7 +137,6 @@ class BrokerPipelineTest {
         frame[frame.length - 2] = (byte) (frame[frame.length - 2] == '9' ? '8' : '9');
         sendRaw(frame);
 
-        // rien ne doit remonter : on laisse le temps au pipeline de tourner
         Thread.sleep(300);
         assertThat(reporter.events).isEmpty();
         assertThat(pending.size()).isEqualTo(1);
@@ -151,7 +144,7 @@ class BrokerPipelineTest {
 
     @Test
     void aMessageThatIsNeitherLogonNorReportIsIgnored() throws IOException, InterruptedException {
-        // un ordre (35=D) arrive par erreur sur le Broker : rien a en faire
+
         send(MessageFactory.newOrder(MARKET_ID, BROKER_ID, 4, "AAPL", Side.BUY, 100, new BigDecimal("150.50")));
 
         Thread.sleep(300);
@@ -173,15 +166,13 @@ class BrokerPipelineTest {
         }
 
         assertThat(reporter.events).hasSize(20);
-        // chaque rapport pointe l'ordre de meme quantite que son ClOrdID (invariant du test)
+
         for (RecordingReporter.Event event : reporter.events) {
             assertThat(event.kind()).isEqualTo("EXECUTED");
             assertThat(event.order().quantity()).isEqualTo(event.clOrdId());
         }
         assertThat(pending.size()).isZero();
     }
-
-    // --- plomberie du faux Router -------------------------------------------------
 
     private void send(FixMessage message) throws IOException {
         sendRaw(FixSerializer.serialize(message));

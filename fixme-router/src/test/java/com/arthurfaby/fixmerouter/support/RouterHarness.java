@@ -8,12 +8,6 @@ import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-/**
- * Demarre un vrai Router (Reactor + RouterConnectionListener) sur des ports
- * ephemeres, pour les tests d'integration et de robustesse (PLAN.md §4.2/§4.3).
- * Un seul Router par test ; la RoutingTable/IdGenerator etant statiques, les
- * tests raisonnent sur des ID precis ou des deltas, pas sur un etat global.
- */
 public final class RouterHarness implements AutoCloseable {
 
     private final ExecutorService workerPool;

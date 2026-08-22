@@ -33,6 +33,8 @@ public final class InstrumentBook {
         return quantities.getOrDefault(symbol, 0);
     }
 
+    // compute() makes check-and-decrement atomic: essential, several brokers can
+    // hit the same instrument in parallel.
     public Result tryExecute(String symbol, Side side, int quantity) {
         AtomicReference<Result> outcome = new AtomicReference<>(Result.EXECUTED);
         quantities.compute(symbol, (s, current) -> {

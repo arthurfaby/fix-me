@@ -1,11 +1,9 @@
 package com.arthurfaby.fixmemarket.cli.commands;
 
-
 import com.arthurfaby.fixmemarket.cli.CLIRouter;
 import com.arthurfaby.fixmemarket.cli.SplitTerminal;
 
 public class HelpCommand implements Command {
-
 
     CLIRouter cliRouterInstance;
 

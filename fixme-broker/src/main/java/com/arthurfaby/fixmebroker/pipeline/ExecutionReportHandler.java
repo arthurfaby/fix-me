@@ -10,16 +10,6 @@ import com.arthurfaby.fixmecommon.protocol.enums.OrderStatus;
 
 import java.util.Optional;
 
-/**
- * Dernier maillon : traite ce qui revient au sujet d'un ordre emis.
- * <ul>
- *   <li>l'ExecutionReport (35=8) du Market : execute (39=2) ou rejete (39=8) ;</li>
- *   <li>le Reject de transport (35=3) du Router : cible inconnue / injoignable,
- *       ou checksum invalide.</li>
- * </ul>
- * Dans les deux cas on correle par ClOrdID (11) a l'ordre en attente, on le
- * retire et on l'affiche. Un rapport sans ordre correspondant ne casse rien.
- */
 public final class ExecutionReportHandler implements Handler<BrokerCtx> {
 
     @Override
@@ -32,7 +22,7 @@ public final class ExecutionReportHandler implements Handler<BrokerCtx> {
         } else if (MessageType.REJECT.getValue().equals(type)) {
             handleTransportReject(ctx, message);
         }
-        // ni Logon (deja intercepte) ni report : rien pour nous
+
         return HandlerResult.STOP;
     }
 
@@ -54,7 +44,8 @@ public final class ExecutionReportHandler implements Handler<BrokerCtx> {
 
     private static void handleTransportReject(BrokerCtx ctx, FixMessage reject) {
         String reason = reject.getString(FixTag.REJECT_REASON);
-        // checksum invalide : le Router n'a pas pu se fier au ClOrdID, il est absent
+
+        // invalid checksum: the Router couldn't trust the ClOrdID, so it's absent
         if (!reject.has(FixTag.CLIENT_ORDER_ID)) {
             ctx.reporter().transportReject(reason);
             return;

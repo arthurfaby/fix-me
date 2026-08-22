@@ -5,12 +5,6 @@ import com.arthurfaby.fixmebroker.order.Order;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-/**
- * Reporter de test : capture les evenements au lieu de les afficher, pour
- * que le pipeline et l'emission d'ordres se verifient sans terminal. La
- * liste est concurrente car les evenements du pipeline sont produits sur le
- * thread de l'executor et lus depuis le thread de test.
- */
 public final class RecordingReporter implements OrderReporter {
 
     public record Event(String kind, Order order, int clOrdId, String detail) {}

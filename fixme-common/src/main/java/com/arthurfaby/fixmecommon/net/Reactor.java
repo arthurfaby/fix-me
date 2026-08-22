@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
 
+// Single Selector loop: this thread is the only one that touches channels and SelectionKeys.
 public final class Reactor {
 
     private static final Logger logger = LogManager.getLogger(
@@ -105,13 +106,14 @@ public final class Reactor {
                 break;
             }
 
+            // what other threads asked for while we were asleep in select()
             drainPendingCloses();
             drainPendingWrites();
 
             Iterator<SelectionKey> iterator = selector.selectedKeys().iterator();
             while (iterator.hasNext()) {
                 SelectionKey key = iterator.next();
-                iterator.remove();
+                iterator.remove(); // the Selector doesn't clear the set, else we reprocess stale keys
                 if (!key.isValid()) {
                     continue;
                 }
@@ -162,7 +164,7 @@ public final class Reactor {
             return;
         }
         if (!finished) {
-            return; // reveil premature, on repassera
+            return; // premature wakeup, we'll come back
         }
         key.interestOps(SelectionKey.OP_READ);
         listener.onConnected(connection);
@@ -179,11 +181,11 @@ public final class Reactor {
             return;
         }
         if (read == -1) {
-            closeConnection(connection);
+            closeConnection(connection); // peer closed; without this the key stays ready -> 100% CPU
             return;
         }
         if (read == 0) {
-            return;
+            return; // nothing to read, not an error
         }
 
         buffer.flip();
@@ -199,6 +201,7 @@ public final class Reactor {
             return;
         }
 
+        // hand off the Selector thread: the work runs on the executor, ordered per connection
         for (byte[] frame : frames) {
             connection.executor().execute(() -> listener.onMessage(connection, frame));
         }
@@ -212,10 +215,11 @@ public final class Reactor {
             while ((buffer = outbound.peek()) != null) {
                 connection.channel().write(buffer);
                 if (buffer.hasRemaining()) {
-                    return;
+                    return; // kernel buffer full: keep OP_WRITE and come back later
                 }
                 outbound.poll();
             }
+            // queue drained: drop OP_WRITE, else select() spins non-stop (100% CPU)
             key.interestOps(key.interestOps() & ~SelectionKey.OP_WRITE);
         } catch (IOException e) {
             closeConnection(connection);
@@ -244,7 +248,7 @@ public final class Reactor {
         try {
             connection.channel().close();
         } catch (IOException ignored) {
-            // la connexion part de toute facon
+
         }
         listener.onDisconnected(connection);
     }

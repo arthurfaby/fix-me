@@ -19,6 +19,7 @@ public final class ForwardingHandler implements Handler<RouterCtx> {
         Connection target = ctx.target();
 
         if (!target.isOpen()) {
+            // socket died between resolution and write: purge and reject
             RoutingTable.unregister(ctx.message().getInt(FixTag.TARGET_ID));
             reject(ctx);
             return HandlerResult.STOP;

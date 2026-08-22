@@ -13,11 +13,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
-/**
- * La CLI du Market (DoD phase 6) : la table de commandes dispatche, et une
- * entree invalide n'explose pas. La sortie est capturee car SplitTerminal
- * ecrit des sequences ANSI sur System.out.
- */
 class CLIRouterTest {
 
     private PrintStream originalOut;

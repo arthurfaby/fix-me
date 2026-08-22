@@ -14,12 +14,6 @@ import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
 
-/**
- * Un client de test en socket <b>bloquante</b> (c'est un test, pas le produit)
- * qui joue le role d'un broker ou d'un market brut face au vrai Router. Donne
- * le controle fin dont ont besoin les tests de robustesse : envoi brut, envoi
- * octet par octet, lecture de frame avec timeout.
- */
 public final class FakeClient implements AutoCloseable {
 
     private final Socket socket;
@@ -46,7 +40,6 @@ public final class FakeClient implements AutoCloseable {
         socket.getOutputStream().flush();
     }
 
-    /** Envoie octet par octet, avec une micro-pause, pour forcer la fragmentation TCP. */
     public void sendBytesOneByOne(byte[] frame, long millisBetween) throws IOException {
         for (byte b : frame) {
             socket.getOutputStream().write(new byte[]{b});
@@ -62,7 +55,6 @@ public final class FakeClient implements AutoCloseable {
         }
     }
 
-    /** Ferme la socket sans flush ni FIN propre (SO_LINGER 0 → RST) : deconnexion brutale. */
     public void closeAbruptly() throws IOException {
         socket.setSoLinger(true, 0);
         socket.close();
@@ -90,7 +82,6 @@ public final class FakeClient implements AutoCloseable {
         return new String(readFrame(), StandardCharsets.US_ASCII);
     }
 
-    /** Lit le Logon initial du Router et rend l'ID attribue (champ 56). */
     public int readLogonId() throws IOException {
         String text = readFrameAsString();
         String prefix = FixTag.TARGET_ID.getKey() + "=";
@@ -107,9 +98,6 @@ public final class FakeClient implements AutoCloseable {
         socket.close();
     }
 
-    // --- fabrique de messages "sur le fil", checksum calcule pour de vrai --------
-
-    /** Construit une frame complete a partir de champs deja formates (sans le 10=). */
     public static byte[] wire(String... fields) {
         StringBuilder sb = new StringBuilder();
         for (String field : fields) {

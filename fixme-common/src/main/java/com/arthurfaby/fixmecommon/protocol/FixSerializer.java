@@ -11,7 +11,7 @@ public class FixSerializer {
     public static byte[] serialize(FixMessage fixMessage) {
         ByteArrayOutputStream body = new ByteArrayOutputStream();
         for (Map.Entry<Integer, String> entry : fixMessage.entries()) {
-            if (entry.getKey() == FixTag.CHECKSUM.getKey()) continue;
+            if (entry.getKey() == FixTag.CHECKSUM.getKey()) continue; // we recompute the 10= ourselves
             body.writeBytes((entry.getKey() + "=" + entry.getValue()).getBytes(StandardCharsets.US_ASCII));
             body.write(FixConstants.SOH);
         }

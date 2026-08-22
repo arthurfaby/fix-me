@@ -16,10 +16,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * Coeur de l'emission d'ordres, teste sans socket : le sink d'octets capture
- * le message FIX serialise, le fournisseur d'ID simule l'etat de connexion.
- */
 class OrderSenderTest {
 
     private final List<byte[]> sink = new ArrayList<>();
@@ -55,16 +51,16 @@ class OrderSenderTest {
 
     @Test
     void submitRemembersTheOrderBeforeHandingBytesToTheNetwork() {
-        // le rapport peut revenir avant que submit() ne rende la main : l'ordre
-        // doit deja etre memorise au moment ou le sink est appele
+
         AtomicReference<PendingOrders> ref = new AtomicReference<>();
         PendingOrders pending = new PendingOrders();
         ref.set(pending);
 
+        // the sink runs during submit(): the order must already be remembered at that point
         OrderSender sender = new OrderSender(pending, () -> 100_001, bytes -> {
             int clOrdId = FixParser.parse(bytes).getInt(FixTag.CLIENT_ORDER_ID);
             assertThat(ref.get().take(clOrdId)).as("order remembered before send").isPresent();
-            ref.get().remember(new Order(clOrdId, 0, "AAPL", Side.BUY, 1, BigDecimal.ONE)); // remets pour le reste du test
+            ref.get().remember(new Order(clOrdId, 0, "AAPL", Side.BUY, 1, BigDecimal.ONE)); // put it back for the rest
         }, reporter);
 
         sender.submit(100_002, "AAPL", Side.BUY, 100, new BigDecimal("150.50"));

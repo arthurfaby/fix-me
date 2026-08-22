@@ -4,7 +4,6 @@ import com.arthurfaby.fixmebroker.cli.SplitTerminal;
 
 import java.util.function.Supplier;
 
-/** Affiche l'ID attribue par le Router, ou un message tant qu'il n'est pas connu. */
 public final class IdCommand implements Command {
 
     private final Supplier<Integer> brokerId;

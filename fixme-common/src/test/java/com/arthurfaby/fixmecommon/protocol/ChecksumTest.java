@@ -10,7 +10,7 @@ class ChecksumTest {
 
     @Test
     void computesAKnownValueCalculatedByHand() {
-        // "1=A" + SOH : '1'(49) + '='(61) + 'A'(65) + SOH(1) = 176
+
         byte[] data = concat("1=A".getBytes(StandardCharsets.US_ASCII), new byte[]{FixConstants.SOH});
 
         assertThat(Checksum.compute(data, data.length)).isEqualTo("176");
@@ -25,9 +25,7 @@ class ChecksumTest {
 
     @Test
     void neverIncludesTheChecksumFieldItselfInTheSum() {
-        // Peu importe ce qui est écrit dans le trailer "10=xxx", compute() ne doit
-        // lire que les `length` premiers octets. Le champ checksum n'est jamais
-        // pris en compte dans son propre calcul.
+
         byte[] body = "49=100001".getBytes(StandardCharsets.US_ASCII);
         byte[] withTrailerA = concat(body, "10=999".getBytes(StandardCharsets.US_ASCII));
         byte[] withTrailerB = concat(body, "10=000".getBytes(StandardCharsets.US_ASCII));
@@ -48,7 +46,7 @@ class ChecksumTest {
     void rejectsATamperedChecksumDigit() {
         byte[] tampered = FixExamples.LOGON.clone();
         tampered[tampered.length - 2] = (byte) (tampered[tampered.length - 2] == '5' ? '6' : '5');
-        assertThat(Checksum.verify(tampered)).isFalse(); 
+        assertThat(Checksum.verify(tampered)).isFalse();
     }
 
     @Test

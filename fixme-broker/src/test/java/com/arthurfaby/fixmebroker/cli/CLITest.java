@@ -23,11 +23,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * DoD phase 7 (PLAN.md) : la CLai dispatche par nom, parse les arguments de
- * buy/sell, et une entree invalide produit un message d'usage - jamais une
- * stack trace ni un envoi. La sortie ANSI de SplitTerminal est capturee.
- */
 class CLITest {
 
     private PrintStream originalOut;

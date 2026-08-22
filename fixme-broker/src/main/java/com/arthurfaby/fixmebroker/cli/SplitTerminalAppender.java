@@ -12,7 +12,6 @@ import org.apache.logging.log4j.core.config.plugins.PluginFactory;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 
-/** Redirige chaque ligne de log vers la zone haute du {@link SplitTerminal}. */
 @Plugin(name = "SplitTerminalAppender", category = "Core", elementType = "appender", printObject = true)
 public final class SplitTerminalAppender extends AbstractAppender {
 

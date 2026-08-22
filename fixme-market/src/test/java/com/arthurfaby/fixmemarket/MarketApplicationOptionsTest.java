@@ -13,11 +13,6 @@ import java.nio.file.Path;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-/**
- * DoD phase 6 (PLAN.md) : les deux formes de declaration du book
- * (--instruments=AAPL:1000,GOOG:500 et --instruments-file=market.properties)
- * plus les defauts de connexion, sans demarrer le reseau.
- */
 class MarketApplicationOptionsTest {
 
     private static MarketApplication parse(String... args) {

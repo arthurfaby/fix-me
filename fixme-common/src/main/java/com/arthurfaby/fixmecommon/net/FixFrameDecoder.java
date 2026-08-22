@@ -6,11 +6,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+// The message always ends with the checksum field, so we split frames by scanning
+// the terminal pattern \x0110=NNN\x01. Handles TCP fragmentation.
 public final class FixFrameDecoder implements FrameDecoder {
 
     private static final int MAX_FRAME_SIZE = 4096;
     private static final byte[] CHECKSUM_TAG_PREFIX = {FixConstants.SOH, '1', '0', '='};
-    private static final int TERMINATOR_LENGTH = CHECKSUM_TAG_PREFIX.length + 3 + 1; // SOH + "10=" + 3 digits + SOH
+    private static final int TERMINATOR_LENGTH = CHECKSUM_TAG_PREFIX.length + 3 + 1;
 
     private byte[] pending = new byte[0];
 
@@ -37,6 +39,7 @@ public final class FixFrameDecoder implements FrameDecoder {
         }
 
         pending = Arrays.copyOfRange(buffer, frameStart, buffer.length);
+        // OOM guard: a client that never sends a 10= must not grow the buffer forever
         if (pending.length > MAX_FRAME_SIZE) {
             throw new IllegalStateException(
                     "Frame exceeds " + MAX_FRAME_SIZE + " bytes without a checksum terminator");
@@ -56,7 +59,7 @@ public final class FixFrameDecoder implements FrameDecoder {
 
             int digitsStart = i + CHECKSUM_TAG_PREFIX.length;
             if (digitsStart + 4 > buffer.length) {
-                return -1; // "SOH10=" found but there is not final 3 digits and final SOH
+                return -1;
             }
             if (isThreeDigits(buffer, digitsStart) && buffer[digitsStart + 3] == FixConstants.SOH) {
                 return i;

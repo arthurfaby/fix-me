@@ -5,6 +5,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+// One task in flight per connection, in arrival order, while sharing the pool.
+// Parallelism stays real between connections, ordering is guaranteed per connection.
 public final class SerialExecutor {
 
     private final Executor delegate;
@@ -39,6 +41,7 @@ public final class SerialExecutor {
             return;
         }
         running.set(false);
+        // race: a task may have landed between poll() and set(false), pick it up
         if (!tasks.isEmpty() && running.compareAndSet(false, true)) {
             drainOrRelease();
         }

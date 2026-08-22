@@ -5,10 +5,6 @@ import picocli.CommandLine;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * DoD phase 7 (PLAN.md) : les options --host / --port et leurs defauts
- * (localhost:5000), sans demarrer le reseau.
- */
 class BrokerApplicationOptionsTest {
 
     private static BrokerApplication parse(String... args) {

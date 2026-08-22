@@ -22,9 +22,8 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
         </dependency>
-        <!-- Test uniquement : le test full-stack (phase 9) cable un vrai Router et
-             un vrai Market en process pour prouver la chaine de bout en bout. Pas
-             de cycle : Router/Market ne dependent pas du Broker. -->
+        <!-- test only: the full-stack test wires a real Router and a real Market
+             in-process. No cycle, they don't depend on the Broker. -->
         <dependency>
             <groupId>com.arthurfaby</groupId>
             <artifactId>fixme-router</artifactId>
@@ -55,9 +54,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <!-- Genere le catalogue de plugins log4j2 (Log4j2Plugins.dat) a la
-                         compilation, pour que SplitTerminalAppender soit trouve sans le
-                         mecanisme de scan de packages (deprecie, plus lent, plus bruyant). -->
+                    <!-- generate the Log4j2Plugins.dat catalog at compile time, so
+                         SplitTerminalAppender is found without the package scan -->
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.apache.logging.log4j</groupId>
@@ -71,11 +69,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <dependencies>
-                    <!-- Sans ce transformer, le shade garde un seul Log4j2Plugins.dat en cas
-                         de collision de chemin entre log4j-core.jar et nos classes - ecrasant
-                         le catalogue natif de log4j-core (dont XmlConfigurationFactory !) par
-                         le notre (juste SplitTerminalAppender). Il fusionne les deux au lieu
-                         d'en jeter un. -->
+                    <!-- merge our Log4j2Plugins.dat with log4j-core's instead of
+                         overwriting one during the shade -->
                     <dependency>
                         <groupId>org.apache.logging.log4j</groupId>
                         <artifactId>log4j-transform-maven-shade-plugin-extensions</artifactId>

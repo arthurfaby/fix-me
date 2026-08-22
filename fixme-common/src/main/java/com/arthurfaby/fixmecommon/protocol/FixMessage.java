@@ -16,6 +16,7 @@ public final class FixMessage {
     private final Map<Integer, String> fields;
 
     FixMessage(Map<Integer, String> fields) {
+        // LinkedHashMap: field order matters for the checksum
         this.fields = Collections.unmodifiableMap(new LinkedHashMap<>(fields));
     }
 
@@ -53,4 +54,3 @@ public final class FixMessage {
 
     public static Builder builder() { return new Builder(); }
 }
-

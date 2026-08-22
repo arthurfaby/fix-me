@@ -7,12 +7,6 @@ import com.arthurfaby.fixmecommon.pipeline.HasRawFrame;
 import com.arthurfaby.fixmecommon.protocol.FixMessage;
 import com.arthurfaby.fixmecommon.protocol.FixParser;
 
-/**
- * Contexte du pipeline Broker : la connexion (unique) vers le Router, la
- * frame brute, et le FixMessage parse une seule fois de facon paresseuse.
- * Le parsing est cache ici plutot que refait dans chaque maillon ; s'il
- * echoue, l'exception remonte et le Pipeline arrete proprement la chaine.
- */
 public final class BrokerCtx implements HasRawFrame {
 
     private final Connection routerConnection;
@@ -47,7 +41,7 @@ public final class BrokerCtx implements HasRawFrame {
         return reporter;
     }
 
-    /** Parse a la demande, une seule fois. Peut lever FixParseException. */
+    // lazy parse, once; if it throws, the Pipeline catches it and stops the chain
     public FixMessage message() {
         if (message == null) {
             message = FixParser.parse(rawFrame);

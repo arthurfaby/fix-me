@@ -1,6 +1,5 @@
 package com.arthurfaby.fixmerouter;
 
-
 import com.arthurfaby.fixmecommon.net.FixFrameDecoder;
 import com.arthurfaby.fixmecommon.net.Reactor;
 import com.arthurfaby.fixmerouter.net.RouterConnectionListener;
@@ -19,10 +18,10 @@ import java.util.concurrent.Executors;
         mixinStandardHelpOptions = true
 )
 public class RouterApplication implements Callable<Integer> {
-    @CommandLine.Option(names = {"-b", "--broker-port"}, description = "Port du broker.", defaultValue = "5000")
+    @CommandLine.Option(names = {"-b", "--broker-port"}, description = "Broker port.", defaultValue = "5000")
     private int brokerPort;
 
-    @CommandLine.Option(names = {"-m", "--market-port"}, description = "Port du marché.", defaultValue = "5001")
+    @CommandLine.Option(names = {"-m", "--market-port"}, description = "Market port.", defaultValue = "5001")
     private int marketPort;
 
     @Override

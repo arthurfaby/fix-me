@@ -19,12 +19,6 @@ import com.arthurfaby.fixmecommon.protocol.exception.FixParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-/**
- * Chef d'orchestre du Market : une seule connexion sortante vers le Router.
- * Le premier message recu sur cette connexion est toujours le Logon du
- * Router (35=A) qui attribue l'ID du Market - il est intercepte ici et ne
- * passe jamais par le pipeline de trading. Tout le reste est un ordre.
- */
 public final class MarketConnectionListener implements ConnectionListener {
 
     private Connection connection;
@@ -63,6 +57,7 @@ public final class MarketConnectionListener implements ConnectionListener {
             return;
         }
 
+        // first message on the connection = the Router's logon giving us our id
         if (MessageType.LOGON.getValue().equals(message.getString(FixTag.MESSAGE_TYPE))) {
             int assignedId = message.getInt(FixTag.TARGET_ID);
             routerConnection.attach(assignedId);

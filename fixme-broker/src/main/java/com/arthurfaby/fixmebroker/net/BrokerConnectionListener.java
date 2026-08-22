@@ -12,13 +12,6 @@ import com.arthurfaby.fixmecommon.pipeline.Pipeline;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-/**
- * Chef d'orchestre du Broker : une seule connexion sortante vers le Router.
- * Chaque frame recue traverse la chaine
- * Checksum -> IdAssignment (Logon) -> ExecutionReport. Le SerialExecutor de
- * la connexion garantit l'ordre des rapports ; ce listener ne partage aucun
- * etat mutable au-dela de la Connection et de PendingOrders (thread-safe).
- */
 public final class BrokerConnectionListener implements ConnectionListener {
 
     private static final Logger LOGGER = LogManager.getLogger(BrokerConnectionListener.class);

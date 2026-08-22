@@ -33,7 +33,7 @@ public class RouterConnectionListener implements ConnectionListener {
     public void onConnected(Connection connection) {
         Integer id = IdGenerator.generate();
         connection.attach(id);
-        RoutingTable.register(id, connection);
+        RoutingTable.register(id, connection); // register before sending the logon: the client may reply immediately
 
         FixMessage logon = MessageFactory.logon(id);
         connection.send(FixSerializer.serialize(logon));
@@ -58,6 +58,8 @@ public class RouterConnectionListener implements ConnectionListener {
         logger.debug("[{}] Connection closed", connection.attachment());
     }
 
+    // Bad checksum: we don't trust the message's 56, so we reply on the origin
+    // socket, never through the routing table.
     private void rejectInvalidChecksum(Connection connection) {
         if (!(connection.attachment() instanceof Integer senderId)) {
             return;

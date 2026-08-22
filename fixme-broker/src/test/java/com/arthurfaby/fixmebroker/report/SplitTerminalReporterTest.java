@@ -13,10 +13,6 @@ import java.nio.charset.StandardCharsets;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * Verifie le format lisible attendu par le sujet ([SENT]/[EXECUTED]/[REJECTED]),
- * en capturant ce que le reporter ecrit sur le terminal.
- */
 class SplitTerminalReporterTest {
 
     private PrintStream originalOut;

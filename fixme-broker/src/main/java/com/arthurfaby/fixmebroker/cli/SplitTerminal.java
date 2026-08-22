@@ -1,11 +1,7 @@
 package com.arthurfaby.fixmebroker.cli;
 
-/**
- * Terminal coupe en deux zones : les logs (asynchrones, thread reactor) en
- * haut, l'invite de commande en bas, separees par une ligne. Evite que les
- * rapports d'execution qui remontent du reseau ne viennent ecraser la ligne
- * que l'utilisateur est en train de taper.
- */
+// Terminal split in two: async logs on top, command prompt at the bottom, so
+// reports coming back from the network don't clobber the line being typed.
 public final class SplitTerminal {
 
     private static final int LOG_ZONE_TOP = 1;

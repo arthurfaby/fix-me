@@ -8,11 +8,6 @@ import com.arthurfaby.fixmecommon.protocol.MessageFactory;
 import com.arthurfaby.fixmecommon.protocol.enums.FixTag;
 import com.arthurfaby.fixmecommon.protocol.enums.Side;
 
-/**
- * Contexte du pipeline Market : la connexion (unique) vers le Router, la
- * frame brute, et le FixMessage/Side resolus par OrderTypeHandler pour
- * eviter que chaque maillon suivant reparse.
- */
 public final class MarketCtx implements HasRawFrame {
 
     private final Connection routerConnection;
@@ -51,7 +46,6 @@ public final class MarketCtx implements HasRawFrame {
         this.side = side;
     }
 
-    /** Construit et envoie un ExecutionReport rejete (metier), correle a l'ordre d'origine. */
     public void reject(String reasonText) {
         int marketId = routerConnection.attachment();
         int brokerId = message.getInt(FixTag.SENDER_ID);

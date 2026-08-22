@@ -8,11 +8,6 @@ import com.arthurfaby.fixmecommon.protocol.enums.MessageType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-/**
- * Deuxieme maillon : intercepte le Logon (35=A) du Router qui attribue son
- * ID au Broker, l'attache a la connexion et arrete la chaine. Tout le reste
- * (les rapports d'execution) continue vers le maillon suivant.
- */
 public final class IdAssignmentHandler implements Handler<BrokerCtx> {
 
     private static final Logger LOGGER = LogManager.getLogger(IdAssignmentHandler.class);

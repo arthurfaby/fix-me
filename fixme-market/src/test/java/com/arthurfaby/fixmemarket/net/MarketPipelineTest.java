@@ -31,12 +31,6 @@ import java.util.concurrent.Executors;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-/**
- * DoD phase 6 (PLAN.md), volet "bout en bout" : la chaine complete du Market
- * (Checksum -> OrderType -> InstrumentKnown -> QuantityAvailable -> Execution)
- * exercee a travers un vrai Reactor, face a un faux Router en socket
- * bloquante cote test - meme approche que RouterIntegrationTest.
- */
 class MarketPipelineTest {
 
     private static final int MARKET_ID = 100_002;
@@ -139,7 +133,7 @@ class MarketPipelineTest {
     void corruptedChecksumIsDroppedWithoutTouchingTheBook() throws IOException {
         byte[] frame = FixSerializer.serialize(
                 MessageFactory.newOrder(BROKER_ID, MARKET_ID, 6, "AAPL", Side.BUY, 100, price("150.50")));
-        // trafique un chiffre du checksum terminal : ...|10=NNN|
+
         frame[frame.length - 2] = (byte) (frame[frame.length - 2] == '9' ? '8' : '9');
         sendRaw(frame);
 
@@ -149,7 +143,7 @@ class MarketPipelineTest {
 
     @Test
     void aMessageThatIsNotAnOrderIsIgnored() throws IOException {
-        // un ExecutionReport arrive par erreur sur le Market : ce n'est pas a lui d'y repondre
+
         send(MessageFactory.executed(BROKER_ID, MARKET_ID, 7, "AAPL", 100, price("150.50")));
 
         assertNothingComesBack();
@@ -164,7 +158,7 @@ class MarketPipelineTest {
                 .set(FixTag.MESSAGE_TYPE, MessageType.ORDER)
                 .set(FixTag.CLIENT_ORDER_ID, 8)
                 .set(FixTag.INSTRUMENT, "AAPL")
-                .set(FixTag.SIDE, 3) // ni Buy (1) ni Sell (2)
+                .set(FixTag.SIDE, 3)
                 .set(FixTag.QUANTITY, 100)
                 .set(FixTag.PRICE, price("150.50"))
                 .build();
@@ -210,7 +204,6 @@ class MarketPipelineTest {
             send(MessageFactory.newOrder(BROKER_ID, MARKET_ID, clOrdId, "GOOG", Side.BUY, 10, price("99.0")));
         }
 
-        // 50 ordres de 10 sur un stock de 500 : les 50 suivants doivent etre rejetes
         int executed = 0;
         int rejected = 0;
         for (int i = 0; i < 100; i++) {
@@ -225,8 +218,6 @@ class MarketPipelineTest {
         assertThat(rejected).isEqualTo(50);
         assertThat(book.quantityOf("GOOG")).isZero();
     }
-
-    // --- plomberie du faux Router -------------------------------------------------
 
     private static java.math.BigDecimal price(String value) {
         return new java.math.BigDecimal(value);
@@ -263,7 +254,6 @@ class MarketPipelineTest {
         }
     }
 
-    /** Assure qu'aucune reponse ne remonte : le Market a bien ignore le message. */
     private void assertNothingComesBack() throws IOException {
         routerSide.setSoTimeout(300);
         try {
@@ -288,8 +278,7 @@ class MarketPipelineTest {
 
     @Test
     void theMarketAdoptsTheIdAssignedByTheRouterLogon() throws IOException {
-        // le handshake du @BeforeEach a deja attribue l'ID ; on verifie qu'il est
-        // bien celui utilise comme 49= dans les messages sortants
+
         send(MessageFactory.newOrder(BROKER_ID, MARKET_ID, 42, "AAPL", Side.BUY, 1, price("150.50")));
 
         assertThat(readMessage().getInt(FixTag.SENDER_ID)).isEqualTo(MARKET_ID);

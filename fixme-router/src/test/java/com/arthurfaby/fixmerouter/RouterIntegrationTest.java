@@ -26,11 +26,6 @@ import java.util.concurrent.Executors;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-/**
- * DoD phase 5 (PLAN.md) : les memes scenarios que le test manuel au nc,
- * mais automatises via de vraies sockets bloquantes cote test (FakeClient)
- * contre un vrai Reactor/RouterConnectionListener sur des ports ephemeres.
- */
 class RouterIntegrationTest {
 
     private ExecutorService workerPool;
@@ -91,7 +86,7 @@ class RouterIntegrationTest {
             int marketId = market.readLogonId();
 
             byte[] buy = buyOrder(marketId);
-            buy[buy.length - 2] = (byte) (buy[buy.length - 2] == '9' ? '8' : '9'); // trafique un chiffre du checksum
+            buy[buy.length - 2] = (byte) (buy[buy.length - 2] == '9' ? '8' : '9');
             broker.send(buy);
 
             String reject = new String(broker.readFrame(), StandardCharsets.US_ASCII);
@@ -120,10 +115,8 @@ class RouterIntegrationTest {
         int marketId;
         try (FakeClient market = FakeClient.connect(marketPort)) {
             marketId = market.readLogonId();
-        } // fermeture cote client
+        }
 
-        // attend que le Reactor detecte la deconnexion et purge la RoutingTable
-        // (evenement asynchrone) plutot qu'un sleep au hasard -> pas de test flaky
         long deadline = System.currentTimeMillis() + 2000;
         while (RoutingTable.find(marketId).isPresent() && System.currentTimeMillis() < deadline) {
             Thread.sleep(20);
@@ -138,7 +131,6 @@ class RouterIntegrationTest {
             assertThat(reject).contains("58=Unknown target");
         }
 
-        // le router est toujours vivant : une connexion fraiche marche normalement
         try (FakeClient freshMarket = FakeClient.connect(marketPort)) {
             assertThat(freshMarket.readLogonId()).isNotEqualTo(marketId);
         }

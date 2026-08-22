@@ -3,7 +3,6 @@ package com.arthurfaby.fixmebroker.cli.commands;
 import com.arthurfaby.fixmebroker.cli.CLIRouter;
 import com.arthurfaby.fixmebroker.cli.SplitTerminal;
 
-/** Liste les commandes disponibles avec leur usage. */
 public final class HelpCommand implements Command {
 
     private final CLIRouter cliRouter;

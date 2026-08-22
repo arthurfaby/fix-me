@@ -35,7 +35,6 @@ public class MarketApplication implements Callable<Integer> {
     @CommandLine.Option(names = {"--host"}, description = "Router host.", defaultValue = "localhost")
     private String routerHost;
 
-
     @CommandLine.Option(names = {"-p", "--port"}, description = "Router port.", defaultValue = "5000")
     private int routerPort;
 
@@ -88,7 +87,6 @@ public class MarketApplication implements Callable<Integer> {
         }
     }
 
-    /** Les instruments resolus depuis --instruments / --instruments-file (visible pour les tests). */
     Map<String, Integer> instruments() {
         return instruments;
     }
@@ -97,7 +95,6 @@ public class MarketApplication implements Callable<Integer> {
 
     private final Scanner scanner = new Scanner(System.in);
 
-    /** Lit une ligne, ou {@code null} si stdin est ferme (EOF : pipe vide, kill, Ctrl-D). */
     private String readInput() {
         SplitTerminal.prompt("> ");
         if (!scanner.hasNextLine()) {
@@ -150,7 +147,7 @@ public class MarketApplication implements Callable<Integer> {
 
         while (true) {
             var input = readInput();
-            if (input == null) { // EOF : on sort proprement plutot que de crasher sur NoSuchElementException
+            if (input == null) { // stdin EOF: exit instead of crashing on NoSuchElementException
                 logger.info("End of input, shutting down.");
                 break;
             }

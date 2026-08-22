@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  Config de test : le SplitTerminalAppender de production pilote le curseur du
-  terminal en ANSI, ce qui rend la sortie de surefire illisible et pollue le
-  System.out capture par CLIRouterTest. En test on log donc sur stderr, en WARN.
--->
+<!-- in prod the SplitTerminalAppender writes ANSI to System.out and pollutes the
+     tests that capture it; in test we log to stderr -->
+
 <Configuration status="WARN">
 
     <Appenders>

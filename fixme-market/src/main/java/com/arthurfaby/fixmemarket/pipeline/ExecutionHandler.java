@@ -10,11 +10,6 @@ import com.arthurfaby.fixmecommon.protocol.enums.FixTag;
 
 import java.math.BigDecimal;
 
-/**
- * Dernier maillon : execute atomiquement sur le book puis renvoie
- * l'ExecutionReport au Router (qui la fera suivre au broker d'origine
- * via 56=).
- */
 public final class ExecutionHandler implements Handler<MarketCtx> {
 
     private final InstrumentBook book;
@@ -31,9 +26,7 @@ public final class ExecutionHandler implements Handler<MarketCtx> {
 
         InstrumentBook.Result result = book.tryExecute(symbol, ctx.side(), quantity);
         if (result != InstrumentBook.Result.EXECUTED) {
-            // Defense en profondeur : les maillons precedents ont deja valide ce
-            // cas (instrument connu, quantite suffisante) ; on ne devrait jamais
-            // arriver ici tant qu'une seule connexion relie ce Market au Router.
+            // safety net: earlier handlers already validated this case
             ctx.reject("Not enough quantity");
             return HandlerResult.STOP;
         }

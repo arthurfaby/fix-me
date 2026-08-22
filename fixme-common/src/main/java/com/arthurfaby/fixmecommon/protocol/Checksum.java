@@ -8,7 +8,7 @@ public final class Checksum {
     static int sum(byte[] data, int offset, int length) {
         int total = 0;
         for (int i = offset; i < offset + length; i++) {
-            total += (data[i] & 0xFF); // traite le byte comme non-signé (0..255)
+            total += (data[i] & 0xFF);
         }
         return total % 256;
     }
@@ -18,7 +18,7 @@ public final class Checksum {
     }
 
     public static boolean verify(byte[] message) {
-        int trailerLen = 7; // "10=" + 3 digits + SOH
+        int trailerLen = 7; // "10=NNN" + SOH, excluded from the sum
         int coveredLength = message.length - trailerLen;
         if (coveredLength < 0) return false;
         if (message[coveredLength] != '1' || message[coveredLength+1] != '0'

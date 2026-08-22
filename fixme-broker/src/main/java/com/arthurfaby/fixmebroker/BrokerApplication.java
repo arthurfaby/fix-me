@@ -67,7 +67,7 @@ public final class BrokerApplication implements Callable<Integer> {
         BrokerConnectionListener listener = new BrokerConnectionListener(pending, reporter);
         Reactor reactor = new Reactor(workerPool, FixFrameDecoder::new, listener);
 
-        Connection connection;
+        Connection connection; // connect() returns the Connection right away; the id arrives via the logon
         try {
             connection = reactor.connect(routerHost, routerPort);
         } catch (IOException e) {
@@ -106,7 +106,7 @@ public final class BrokerApplication implements Callable<Integer> {
             String input;
             try {
                 input = readInput();
-            } catch (NoSuchElementException endOfInput) {
+            } catch (NoSuchElementException endOfInput) { // stdin EOF (pipe, kill, Ctrl-D)
                 shutdown.run();
                 break;
             }

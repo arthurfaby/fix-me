@@ -2,12 +2,6 @@ package com.arthurfaby.fixmecommon.protocol;
 
 import java.nio.charset.StandardCharsets;
 
-/**
- * Les 4 exemples de la table 2.7 du PLAN, encodés en bytes. Les checksums ont été
- * calculés indépendamment du code Java (script Python, somme des octets modulo 256),
- * jamais via Checksum.compute() : sinon les tests ne feraient que vérifier que le
- * code est d'accord avec lui-même.
- */
 final class FixExamples {
     private FixExamples() {}
 

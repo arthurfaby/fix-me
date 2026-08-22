@@ -55,6 +55,9 @@ public final class Connection {
         this.attachment = value;
     }
 
+    // Callable from any thread: enqueue, then wake the Selector, which is the only
+    // one that writes to the channel. wakeup() or the message waits for the next
+    // network event.
     public void send(byte[] frame) {
         logger.debug("[{}] Message sent : {}", attachment, FixDebug.getReadableWire(frame));
         outbound.offer(ByteBuffer.wrap(frame));

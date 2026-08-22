@@ -1,5 +1,7 @@
 package com.arthurfaby.fixmemarket.cli;
 
+// Terminal split in two: async logs on top, command prompt at the bottom, so
+// logs coming back from the network don't clobber the line being typed.
 public final class SplitTerminal {
 
     private static final int LOG_ZONE_TOP = 1;

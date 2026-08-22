@@ -30,7 +30,7 @@ class FixMessageTest {
                 .set(FixTag.INSTRUMENT, "AAPL");
 
         FixMessage built = builder.build();
-        builder.set(FixTag.INSTRUMENT, "GOOG"); // mutation du builder après build()
+        builder.set(FixTag.INSTRUMENT, "GOOG");
 
         assertThat(built.getString(FixTag.INSTRUMENT)).isEqualTo("AAPL");
     }

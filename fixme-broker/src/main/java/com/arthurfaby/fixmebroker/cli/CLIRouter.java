@@ -7,11 +7,6 @@ import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-/**
- * Dispatch de la CLI Broker : decoupe la ligne en {@code <commande> <args...>},
- * cherche la commande par son premier token et lui passe le reste. Une ligne
- * vide est ignoree ; une commande inconnue est signalee sans planter.
- */
 public final class CLIRouter {
 
     private final SortedMap<String, Command> commandsRegistry = new TreeMap<>();

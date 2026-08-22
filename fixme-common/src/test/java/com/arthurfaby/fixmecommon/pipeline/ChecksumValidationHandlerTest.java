@@ -8,11 +8,6 @@ import java.nio.charset.StandardCharsets;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * Pas exigé par le DoD générique de la phase 2, mais ChecksumValidationHandler
- * est un livrable explicite de cette phase et a maintenant une vraie logique
- * (branchement Checksum.verify() -> HandlerResult) qui mérite un test.
- */
 class ChecksumValidationHandlerTest {
 
     private record FrameContext(byte[] rawFrame) implements HasRawFrame {}
@@ -29,7 +24,7 @@ class ChecksumValidationHandlerTest {
     @Test
     void stopsOnATamperedChecksum() {
         byte[] wire = wireWithValidChecksum("49=100001");
-        wire[wire.length - 2] = (byte) (wire[wire.length - 2] == '9' ? '8' : '9'); // trafique un chiffre
+        wire[wire.length - 2] = (byte) (wire[wire.length - 2] == '9' ? '8' : '9');
 
         assertThat(handler.execute(new FrameContext(wire))).isEqualTo(HandlerResult.STOP);
     }
